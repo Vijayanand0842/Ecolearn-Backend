@@ -10,12 +10,13 @@ public class BackendApplication {
 		// Auto-fix Render's connection string for Java JDBC
 		String url = System.getenv("SPRING_DATASOURCE_URL");
 		if (url != null && !url.startsWith("jdbc:")) {
-			url = "jdbc:" + url;
+			String fixedUrl = "jdbc:" + url;
 			// Ensure SSL is used for Render's managed database
-			if (!url.contains("sslmode=")) {
-				url += (url.contains("?") ? "&" : "?") + "sslmode=require";
+			if (!fixedUrl.contains("sslmode=")) {
+				fixedUrl += (fixedUrl.contains("?") ? "&" : "?") + "sslmode=require";
 			}
-			System.setProperty("spring.datasource.url", url);
+			System.setProperty("spring.datasource.url", fixedUrl);
+			System.out.println("JDBC URL Fixed: " + fixedUrl);
 		}
 		
 		SpringApplication.run(BackendApplication.class, args);
