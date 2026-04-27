@@ -5,10 +5,6 @@ services:
     env: docker
     repo: https://github.com/Vijayanand0842/Ecolearn-Backend.git
     dockerfilePath: Dockerfile.mysql # We will provide a small Dockerfile for MySQL
-    disk:
-      name: mysql-data
-      mountPath: /var/lib/mysql
-      sizeGB: 1
     envVars:
       - key: MYSQL_DATABASE
         value: eco_learning_db
