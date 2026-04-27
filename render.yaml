@@ -1,21 +1,10 @@
-services:
-  # MySQL Database as a Private Service
-  - type: web
-    name: mysql-db
+databases:
+  - name: ecolearn-db
     plan: free
-    env: docker
-    repo: https://github.com/Vijayanand0842/Ecolearn-Backend.git
-    dockerfilePath: Dockerfile.mysql # We will provide a small Dockerfile for MySQL
-    envVars:
-      - key: MYSQL_DATABASE
-        value: eco_learning_db
-      - key: MYSQL_ROOT_PASSWORD
-        generateValue: true
-      - key: MYSQL_USER
-        value: ecolearn_user
-      - key: MYSQL_PASSWORD
-        generateValue: true
+    databaseName: eco_learning_db
+    user: ecolearn_user
 
+services:
   # Spring Boot Web API
   - type: web
     name: ecolearn-api
@@ -27,11 +16,14 @@ services:
       - key: PORT
         value: 8080
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://mysql-db:3306/eco_learning_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+        fromDatabase:
+          name: ecolearn-db
+          property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
-        value: ecolearn_user
+        fromDatabase:
+          name: ecolearn-db
+          property: user
       - key: SPRING_DATASOURCE_PASSWORD
-        fromService:
-          type: web
-          name: mysql-db
-          envVarKey: MYSQL_PASSWORD
+        fromDatabase:
+          name: ecolearn-db
+          property: password
