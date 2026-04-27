@@ -2,6 +2,7 @@ services:
   # MySQL Database as a Private Service
   - type: web
     name: mysql-db
+    plan: free
     env: docker
     repo: https://github.com/Vijayanand0842/Ecolearn-Backend.git
     dockerfilePath: Dockerfile.mysql # We will provide a small Dockerfile for MySQL
@@ -18,6 +19,7 @@ services:
   # Spring Boot Web API
   - type: web
     name: ecolearn-api
+    plan: free
     env: docker
     dockerfilePath: Dockerfile
     repo: https://github.com/Vijayanand0842/Ecolearn-Backend.git
