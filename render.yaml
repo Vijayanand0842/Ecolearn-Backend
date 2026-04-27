@@ -15,18 +15,10 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      - key: DB_HOST
+      - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: ecolearn-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: ecolearn-db
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: ecolearn-db
-          property: database
+          property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: ecolearn-db
