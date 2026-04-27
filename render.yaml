@@ -13,8 +13,6 @@ services:
     dockerfilePath: Dockerfile
     repo: https://github.com/Vijayanand0842/Ecolearn-Backend.git
     envVars:
-      - key: PORT
-        value: 8080
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: ecolearn-db
