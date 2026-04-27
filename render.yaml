@@ -22,10 +22,9 @@ services:
   # Spring Boot Web API
   - type: web
     name: ecolearn-api
-    env: java
+    env: docker
+    dockerfilePath: Dockerfile
     repo: https://github.com/Vijayanand0842/Ecolearn-Backend.git
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/backend-0.0.1-SNAPSHOT.jar
     envVars:
       - key: PORT
         value: 8080
