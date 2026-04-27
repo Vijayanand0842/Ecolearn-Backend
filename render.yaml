@@ -1,6 +1,6 @@
 services:
   # MySQL Database as a Private Service
-  - type: pserv
+  - type: web
     name: mysql-db
     env: docker
     repo: https://github.com/Vijayanand0842/Ecolearn-Backend.git
@@ -30,6 +30,6 @@ services:
         value: ecolearn_user
       - key: SPRING_DATASOURCE_PASSWORD
         fromService:
-          type: pserv
+          type: web
           name: mysql-db
           envVarKey: MYSQL_PASSWORD
