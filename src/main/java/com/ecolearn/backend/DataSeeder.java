@@ -21,7 +21,7 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
+        if (userRepository.findByUsername("admin") == null) {
             seedUsers();
         }
         if (projectRepository.count() == 0) {
