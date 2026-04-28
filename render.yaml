@@ -1,11 +1,5 @@
-databases:
-  - name: ecolearn-db
-    plan: free
-    databaseName: eco_learning_db
-    user: ecolearn_user
-
 services:
-  # Spring Boot Web API
+  # Spring Boot Web API (Dockerized)
   - type: web
     name: ecolearn-api
     plan: free
@@ -13,15 +7,11 @@ services:
     dockerfilePath: Dockerfile
     repo: https://github.com/Vijayanand0842/Ecolearn-Backend.git
     envVars:
+      # These will be provided by the user in Render Dashboard,
+      # or they can paste the Railway MySQL URL here.
       - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: ecolearn-db
-          property: connectionString
+        sync: false
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: ecolearn-db
-          property: user
+        sync: false
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: ecolearn-db
-          property: password
+        sync: false
