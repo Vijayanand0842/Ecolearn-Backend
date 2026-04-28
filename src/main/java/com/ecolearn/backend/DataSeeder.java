@@ -5,8 +5,7 @@ import com.ecolearn.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-
+import java.util.Random;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -17,6 +16,8 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired private PageRepository pageRepository;
     @Autowired private QuizRepository quizRepository;
     @Autowired private ProjectRepository projectRepository;
+
+    private final Random random = new Random();
 
     @Override
     public void run(String... args) throws Exception {
@@ -29,10 +30,11 @@ public class DataSeeder implements CommandLineRunner {
         if (lessonRepository.count() == 0) {
             seedLessons();
         }
-        System.out.println("DataSeeder completed. Ensured Users, Projects, Modules, and Quizzes exist.");
+        System.out.println("DataSeeder completed. Ensured Users, Projects, Modules, and Quizzes exist with deep sample data.");
     }
 
     private void seedUsers() {
+        // Admin
         User admin = new User();
         admin.setUsername("admin");
         admin.setPassword("admin123");
@@ -40,77 +42,93 @@ public class DataSeeder implements CommandLineRunner {
         admin.setVerified(1);
         admin.setPoints(0);
         userRepository.save(admin);
+
+        // Sample Students
+        String[] students = {"vijay", "eco_warrior", "green_tech", "sustain_expert"};
+        for (String name : students) {
+            User u = new User();
+            u.setUsername(name);
+            u.setPassword("pass123");
+            u.setRole("user");
+            u.setVerified(name.equals("vijay") ? 1 : 0);
+            u.setPoints(random.nextInt(500));
+            userRepository.save(u);
+        }
     }
 
     private void seedProjects() {
+        String[] categories = {"Energy", "Waste", "Water", "Food", "Community", "Transport"};
         String[] difficulties = {"Easy", "Medium", "Hard"};
-        for (int i = 1; i <= 20; i++) {
+        String[] actionVerbs = {"Install", "Setup", "Audit", "Organize", "Implement", "Design"};
+        String[] targets = {"Solar Panels", "Compost Bin", "Rainwater Tank", "Local Garden", "Bike Path", "LED Lighting"};
+
+        for (int i = 1; i <= 50; i++) {
             Project project = new Project();
-            project.setTitle("Eco Project #" + i + ": " + (i % 2 == 0 ? "Community Outreach" : "Home Optimization"));
-            project.setDescription("Complete this amazing project to greatly improve the sustainability footprint of your local area. Documentation required.");
-            project.setDifficulty(difficulties[i % 3]);
+            String cat = categories[i % categories.length];
+            String diff = difficulties[i % 3];
+            project.setTitle(cat + " - " + actionVerbs[i % actionVerbs.length] + " " + targets[i % targets.length] + " (" + i + ")");
+            project.setDescription("This project focuses on " + cat.toLowerCase() + " sustainability. By completing this " + diff.toLowerCase() + " task, you will reduce local carbon emissions and inspire others in your community. " +
+                "Requirements: Take a photo of the completed installation and provide a brief write-up of the benefits observed.");
+            project.setDifficulty(diff);
             projectRepository.save(project);
         }
     }
 
     private void seedLessons() {
         String[][] lessonThemes = {
-            {"Energy", "Solar Power Fundamentals"}, {"Energy", "Wind Turbines & Microgrids"},
-            {"Waste", "Zero Waste Living Handbook"}, {"Waste", "Advanced Composting Techniques"},
-            {"Water", "Water Conservation & Harvesting"}, {"Food", "Urban Permaculture 101"},
-            {"Food", "Plant-Based Diets for Climate"}, {"Lifestyle", "Sustainable Fashion Ethics"},
-            {"Lifestyle", "Minimalism & Eco-Footprint"}, {"Policy", "Climate Activism & Policy"}
+            {"Energy", "Solar Power Fundamentals", "Learn how to harness the sun's power for a cleaner future."},
+            {"Energy", "Wind Turbines & Microgrids", "Deep dive into kinetic energy and localized power distribution."},
+            {"Waste", "Zero Waste Living Handbook", "Practical steps to eliminate trash from your daily life."},
+            {"Waste", "Advanced Composting Techniques", "Master the science of decomposition and soil enrichment."},
+            {"Water", "Water Conservation & Harvesting", "Save every drop with greywater recycling and rain capture."},
+            {"Food", "Urban Permaculture 101", "Turn tiny balconies into productive food forests."},
+            {"Food", "Plant-Based Diets for Climate", "The impact of nutrition on global ecological health."},
+            {"Lifestyle", "Sustainable Fashion Ethics", "Understanding the true cost of fast fashion and circularity."},
+            {"Lifestyle", "Minimalism & Eco-Footprint", "Less is more: reducing consumption for a healthier planet."},
+            {"Policy", "Climate Activism & Policy", "How to influence local government and drive systemic change."},
+            {"Tech", "Smart Home Automation", "Using IoT to optimize energy use in modern households."},
+            {"Nature", "Biodiversity Restoration", "Repairing local ecosystems and protecting native species."}
         };
 
         for (int l = 0; l < lessonThemes.length; l++) {
             String category = lessonThemes[l][0];
             String title = lessonThemes[l][1];
+            String desc = lessonThemes[l][2];
 
             Lesson lesson = new Lesson();
             lesson.setTitle(title);
             lesson.setCategory(category);
-            lesson.setDescription("A comprehensive masterclass on " + title + ".");
+            lesson.setDescription(desc);
             lesson = lessonRepository.save(lesson);
 
             String[] moduleNames = {
-                "Introduction and Foundations",
-                "Historical Context and Evolution",
-                "Core Methodologies and Frameworks",
-                "Practical Applications in Daily Life",
-                "Economic and Social Impacts",
-                "Advanced Strategies for Scaling",
-                "Common Challenges and Solutions",
-                "Future Trends and Innovations"
+                "Historical Foundations",
+                "Scientific Principles",
+                "Global Case Studies",
+                "Practical Workshop",
+                "Economic Feasibility",
+                "Social Equity & Justice",
+                "Implementation Roadmap",
+                "Future Outlook"
             };
 
-            for (int m = 1; m <= 8; m++) {
+            for (int m = 1; m <= moduleNames.length; m++) {
                 ModuleEntity mod = new ModuleEntity();
                 mod.setLessonId(lesson.getId());
-                mod.setTitle("Chapter " + m + ": " + moduleNames[m-1]);
+                mod.setTitle("Module " + m + ": " + moduleNames[m-1]);
                 mod.setOrderIndex(m);
                 mod = moduleRepository.save(mod);
 
                 for (int p = 1; p <= 3; p++) {
                     Page page = new Page();
                     page.setModuleId(mod.getId());
-                    String content = "";
-                    if (p == 1) {
-                        content = "Welcome to Chapter " + m + ", Section 1.\n\n" +
-                            "This chapter focuses on " + moduleNames[m-1].toLowerCase() + " in the context of " + title + ". " +
-                            "Sustainability is a multifaceted discipline that requires us to understand both the theoretical underpinnings and the practical realities. " +
-                            "As we delve into this topic, consider how these concepts might apply to your own environment and community.\n\n" +
-                            "The principles we cover here form the bedrock of ecological consciousness. We must critically examine how modern systems interact with natural ecosystems, and what paradigm shifts are required to bring them into harmony.";
-                    } else if (p == 2) {
-                        content = "Chapter " + m + ", Section 2: Deep Dive.\n\n" +
-                            "Building upon the foundations laid in the previous section, we now explore the complex mechanisms that drive " + moduleNames[m-1].toLowerCase() + ". " +
-                            "Experts have identified several key indicators of success when implementing " + title + " strategies. These include carbon footprint reduction, resource efficiency, and community engagement metrics.\n\n" +
-                            "By analyzing successful case studies, we can extract repeatable patterns. It is crucial to approach these challenges with a systems-thinking mindset, recognizing that an intervention in one area often has cascading effects throughout the entire ecological network.";
-                    } else {
-                        content = "Chapter " + m + ", Section 3: Synthesis and Next Steps.\n\n" +
-                            "In this final section of the chapter, we synthesize our learnings about " + moduleNames[m-1].toLowerCase() + ". " +
-                            "The transition from theory to practice is often the most difficult phase. However, by leveraging the frameworks discussed, individuals and organizations can create actionable, step-by-step implementation plans for " + title + ".\n\n" +
-                            "As you prepare for the knowledge check, reflect on the core themes. How can you advocate for these changes in your local sphere of influence? The journey towards a sustainable future is paved with millions of small, deliberate actions.";
-                    }
+                    String content = "### " + moduleNames[m-1] + " - Part " + p + "\n\n" +
+                        "In this section of our " + title + " course, we examine the critical role of " + moduleNames[m-1].toLowerCase() + ".\n\n" +
+                        "**Key Takeaways:**\n" +
+                        "1. Understanding the system dynamics of " + category + ".\n" +
+                        "2. Identifying leverage points for sustainable intervention.\n" +
+                        "3. Measuring the impact of individual and collective action.\n\n" +
+                        "As we move forward, consider the data points presented in the accompanying charts. The correlation between resource management and ecological stability is undeniable. We must act with urgency and precision.";
                     page.setContent(content);
                     page.setPageNumber(p);
                     pageRepository.save(page);
@@ -121,7 +139,8 @@ public class DataSeeder implements CommandLineRunner {
                 StringBuilder questionsJson = new StringBuilder("[");
                 for (int q = 1; q <= 10; q++) {
                     int correctIdx = q % 4;
-                    questionsJson.append("{\"question\": \"Question ").append(q).append(" for ").append(title).append("?\", \"options\": [\"Option A\", \"Option B\", \"Option C\", \"Option D\"], \"correct_answer\": ").append(correctIdx).append("}");
+                    String qText = "Regarding " + moduleNames[m-1] + ", which statement best describes the " + category + " impact of factor " + q + "?";
+                    questionsJson.append("{\"question\": \"").append(qText).append("\", \"options\": [\"Significant improvement\", \"Marginal impact\", \"Systemic risk factor\", \"Neutral outcome\"], \"correct_answer\": ").append(correctIdx).append("}");
                     if (q < 10) questionsJson.append(",");
                 }
                 questionsJson.append("]");
